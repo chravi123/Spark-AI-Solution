@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+
+    <!-- JSR-303 support will be detected on classpath and enabled automatically -->
+    <context:annotation-config/>
+    <!-- Scan only these packages -->
+    <context:component-scan base-package="com.peak"/>
+
+
+    <!--    <context:component-scan base-package="com.peak">
+       <context:include-filter type="annotation" expression="javax.inject.Named" />
+   </context:component-scan>
+   <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor">
+       <property name="autowiredAnnotationType" value="javax.inject.Inject" />
+   </bean> -->
+
+
+    <context:property-placeholder properties-ref="config"/>
+
+
+    <!--Include the properties file so that the Properties object can be injected, System properties take precedence -->
+    <!--If you need a property from a props file to take precedence over a system property prepend "final." to the property name -->
+    <bean id="config" class="com.peak.spark.core.PropertiesFactoryBean">
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="locations">
+            <list>
+                <value>classpath:/spark-app.properties</value>
+                <value>classpath:/common.properties</value>
+                <value>classpath:/${dp.job.id}.properties</value>
+                <value>file:///opt/dp-spark/application.properties</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--
+    <bean id="config" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="locations">
+            <list>
+                <value>classpath:/spark-app.properties</value>
+                <value>classpath:/common.properties</value>
+                <value>classpath:/${dp.job.id}.properties</value>
+                <value>file:///opt/dp-spark/application.properties</value>
+            </list>
+        </property>
+    </bean>
+    -->
+    <!--Include the SparkConf bean so that the SparkConf object may be injected -->
+    <bean id="sparkConf" class="org.apache.spark.SparkConf" />
+</beans>
